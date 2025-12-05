@@ -1,10 +1,15 @@
 package com.example.aula;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Objects;
+
+
 @ToString
+@EqualsAndHashCode
 @Getter
 @AllArgsConstructor
 public class Pessoa {

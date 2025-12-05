@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.0'
+	id 'org.springframework.boot' version '3.5.8'
 	id 'io.spring.dependency-management' version '1.1.7'
     id 'io.freefair.lombok' version '8.6'
 }
@@ -23,8 +23,17 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // JPA + JDBC Template
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Legal! executa quando subimos o spring boot com ./gradlew bootRun
+    // Mas não faz a mesma coisa no ambiente de teste de integração!
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 }
 
 tasks.named('test') {
