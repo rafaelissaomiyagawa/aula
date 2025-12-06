@@ -1,0 +1,24 @@
+package com.example.junit.model.dto;
+
+import com.example.junit.model.enums.OrderStatus;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public record OrderResponse(
+    Long id,
+    String orderNumber,
+    String customerEmail,
+    LocalDateTime orderDate,
+    OrderStatus status,
+    BigDecimal totalAmount,
+    List<OrderItemResponse> items
+) {
+    public record OrderItemResponse(
+        Long productId,
+        String productName,
+        int quantity,
+        BigDecimal unitPrice
+    ) {}
+}
+
