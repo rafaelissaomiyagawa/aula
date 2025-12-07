@@ -12,6 +12,8 @@ public record OrderResponse(
     LocalDateTime orderDate,
     OrderStatus status,
     BigDecimal totalAmount,
+    boolean freeShipping,
+    boolean manualReview,
     List<OrderItemResponse> items
 ) {
     public record OrderItemResponse(

@@ -76,11 +76,13 @@ public class InventoryService {
 
         // Free shipping
         if (totalAmount.compareTo(new BigDecimal("100")) > 0) {
+            order.setFreeShipping(true);
             log.info("Order {} qualifies for free shipping.", order.getOrderNumber());
         }
 
         // Manual review
         if (totalAmount.compareTo(new BigDecimal("500")) > 0) {
+            order.setManualReview(true);
             log.warn("Order {} requires manual review.", order.getOrderNumber());
         }
 
@@ -167,6 +169,8 @@ public class InventoryService {
                 order.getOrderDate(),
                 order.getStatus(),
                 order.getTotalAmount(),
+                order.isFreeShipping(),
+                order.isManualReview(),
                 order.getItems().stream().map(this::toOrderItemResponse).collect(Collectors.toList())
         );
     }

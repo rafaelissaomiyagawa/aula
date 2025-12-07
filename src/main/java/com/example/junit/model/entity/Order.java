@@ -48,6 +48,12 @@ public class Order {
     @NotNull
     private BigDecimal totalAmount;
 
+    @Column(nullable = false)
+    private boolean freeShipping = false;
+
+    @Column(nullable = false)
+    private boolean manualReview = false;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<OrderItem> items = new ArrayList<>();
