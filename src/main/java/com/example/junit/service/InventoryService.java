@@ -33,7 +33,6 @@ public class InventoryService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
-
     public OrderResponse placeOrder(OrderRequest request) {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -47,9 +46,8 @@ public class InventoryService {
             Product product = productRepository.findById(itemRequest.productId())
                     .orElseThrow(() -> new BusinessRuleException("Product not found with id: " + itemRequest.productId()));
 
-            if (product.getStockQuantity() < itemRequest.quantity()) {
-                throw new BusinessRuleException("Not enough stock for product: " + product.getName());
-            }
+            product.validateStockQuantity(itemRequest.quantity());
+
             if (product.getCategory() == ProductCategory.ELECTRONICS && itemRequest.quantity() > 3) {
                 throw new BusinessRuleException("Cannot order more than 3 electronics of the same type.");
             }

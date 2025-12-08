@@ -29,11 +29,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+
 @DisplayName("A Guide to Mockito and BDDMockito")
+@ExtendWith(MockitoExtension.class)
 class MockitoExampleTest {
 
     @InjectMocks
@@ -60,7 +60,7 @@ class MockitoExampleTest {
             product.setPrice(new BigDecimal("10.00"));
             product.setStockQuantity(10);
 
-            when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+            when(productRepository.findById(1L)).thenReturn(Optional.of(product));
             when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             OrderResponse response = inventoryService.placeOrder(orderRequest);

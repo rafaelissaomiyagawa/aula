@@ -1,12 +1,10 @@
 package com.example.junit.model.entity;
 
+import com.example.junit.exception.BusinessRuleException;
 import com.example.junit.model.enums.ProductCategory;
 import com.example.junit.validation.Sku;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -69,5 +67,11 @@ public class Product {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer()
                                                                        .getPersistentClass()
                                                                        .hashCode() : getClass().hashCode();
+    }
+
+    public void validateStockQuantity(Integer quantity) {
+        if (this.getStockQuantity() < quantity) {
+            throw new BusinessRuleException("Not enough stock for product: " + this.getName());
+        }
     }
 }

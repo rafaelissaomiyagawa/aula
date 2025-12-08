@@ -5,11 +5,14 @@ import com.example.junit.model.entity.OrderItem;
 import com.example.junit.model.entity.Product;
 import com.example.junit.model.enums.OrderStatus;
 import com.example.junit.model.enums.ProductCategory;
+import lombok.extern.slf4j.Slf4j;
 import org.instancio.Instancio;
 import org.instancio.Select;
+import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,13 +21,17 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 // https://www.baeldung.com/java-test-data-instancio
+@Slf4j
 @DisplayName("A Guide to Instancio for Test Data Generation")
+@ExtendWith(InstancioExtension.class)
 class InstancioExampleTest {
 
     @Test
     @DisplayName("should generate a complete Product object")
     void testGenerateSimpleProduct() {
         Product product = Instancio.create(Product.class);
+
+        System.out.println(product);
 
         assertThat(product).isNotNull();
         assertThat(product.getId()).isNotNull();
@@ -164,6 +171,8 @@ class InstancioExampleTest {
         @DisplayName("should create a Product using TestModelFactory")
         void shouldCreateProductUsingTestModelFactory() {
             Product product = TestModelFactory.createProduct();
+
+            System.out.println(product);
 
             assertThat(product).isNotNull();
             assertThat(product.getSku()).matches("[A-Z]{3}-\\d{5}");

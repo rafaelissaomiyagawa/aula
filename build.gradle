@@ -25,10 +25,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
     // JPA + JDBC Template
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
@@ -36,24 +32,32 @@ dependencies {
     // Legal! executa quando subimos o spring boot com ./gradlew bootRun
     // Mas não faz a mesma coisa no ambiente de teste de integração!
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-
-    // Junit 5
-    testImplementation(platform('org.junit:junit-bom:6.0.1'))
-    testImplementation('org.junit.jupiter:junit-jupiter')
-    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 }
 
 tasks.named("test", Test) {
     useJUnitPlatform()
 }
 
+// Não gera relatório no dev. local
+// Se gerar, está no build/reports/tests
+if (!project.hasProperty("ci-environment")) {
+    test {
+        reports {
+            html.required = false
+            junitXml.required = false
+        }
+    }
+}
+
 // https://github.com/radarsh/gradle-test-logger-plugin
 testlogger {
-    showPassed = true
+    showPassed = false
     showFailed = true
     showSkipped = false
 }
 
+
+// https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html
 testing {
     suites {
         test {
