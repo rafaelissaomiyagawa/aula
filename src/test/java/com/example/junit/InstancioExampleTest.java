@@ -1,5 +1,6 @@
 package com.example.junit;
 
+import com.example.TestModelFactory;
 import com.example.junit.model.entity.Order;
 import com.example.junit.model.entity.OrderItem;
 import com.example.junit.model.entity.Product;

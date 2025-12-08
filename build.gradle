@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
     id 'io.freefair.lombok' version '8.6'
     id 'com.adarshr.test-logger' version '4.0.0'
+    id 'java-test-fixtures'
 }
 
 group = 'com.example'
@@ -29,9 +30,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
 
+    // Flyway
+    implementation 'org.flywaydb:flyway-core:10.11.0'
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.11.0'
+
     // Legal! executa quando subimos o spring boot com ./gradlew bootRun
     // Mas não faz a mesma coisa no ambiente de teste de integração!
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    // Test Fixture dependencies
+    // Spring Boot testing support
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // Random test data generator for JUnit
+    testFixturesImplementation 'org.instancio:instancio-junit:5.5.1'
 }
 
 tasks.named("test", Test) {
@@ -60,14 +71,57 @@ testlogger {
 // https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html
 testing {
     suites {
-        test {
-            dependencies {
+        configureEach { suite ->
+            suite.dependencies {
+                implementation testFixtures(project())
+
+                // Spring Boot testing support
                 implementation 'org.springframework.boot:spring-boot-starter-test'
 
-                // Facilitador para criar massa de dados aleatório
-                // https://www.instancio.org/user-guide/
+                // Random test data generator for JUnit
                 implementation 'org.instancio:instancio-junit:5.5.1'
             }
         }
+
+        // Built-in test suite (automatically created by Java plugin)
+        test {
+        }
+
+        // Custom test suite for integration tests
+                    integrationTest(JvmTestSuite) {
+                        // Dependencies for integration tests
+                        dependencies {
+                            // Include the main project code as a dependency
+                            // (test suite automatically has access to test sources)
+                            implementation project()
+                            implementation platform('org.testcontainers:testcontainers-bom:2.0.2')
+                            implementation 'org.testcontainers:junit-jupiter'
+                            implementation 'org.testcontainers:postgresql'
+                            implementation 'org.springframework.boot:spring-boot-testcontainers'
+        
+                            // Lombok for integration tests
+                            compileOnly 'org.projectlombok:lombok'
+                            annotationProcessor 'org.projectlombok:lombok'
+                        }
+        
+                        // Configuration for the test task that runs these tests            targets {
+                configureEach {  // Applies to all targets (currently just one task)
+                    testTask.configure {
+                        // Ordering rule: integrationTest runs after regular test task
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
     }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+}
+
+// Hook integration tests into the standard check lifecycle
+tasks.named('check') {
+    // Makes running 'check' also run integration tests
+    dependsOn(testing.suites.integrationTest)
 }

@@ -1,4 +1,4 @@
-package com.example.junit;
+package com.example;
 
 import com.example.junit.model.dto.OrderItemRequest;
 import com.example.junit.model.dto.OrderRequest;
@@ -17,6 +17,7 @@ public class TestModelFactory {
             .generate(field(Product::getPrice), gen -> gen.math().bigDecimal().min(new BigDecimal("10")).max(new BigDecimal("100")))
             .generate(field(Product::getStockQuantity), gen -> gen.ints().min(0))
             .set(field(Product::isActive), true)
+            .ignore(field(Product::getId))
             .toModel();
 
     public static final Model<OrderRequest> ORDER_REQUEST_MODEL = Instancio.of(OrderRequest.class)
