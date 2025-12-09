@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -85,26 +86,26 @@ testing {
 
         // Built-in test suite (automatically created by Java plugin)
         test {
+
         }
 
         // Custom test suite for integration tests
-                    integrationTest(JvmTestSuite) {
-                        // Dependencies for integration tests
-                        dependencies {
-                            // Include the main project code as a dependency
-                            // (test suite automatically has access to test sources)
-                            implementation project()
-                            implementation platform('org.testcontainers:testcontainers-bom:2.0.2')
-                            implementation 'org.testcontainers:junit-jupiter'
-                            implementation 'org.testcontainers:postgresql'
-                            implementation 'org.springframework.boot:spring-boot-testcontainers'
-        
-                            // Lombok for integration tests
-                            compileOnly 'org.projectlombok:lombok'
-                            annotationProcessor 'org.projectlombok:lombok'
-                        }
-        
-                        // Configuration for the test task that runs these tests            targets {
+        integrationTest(JvmTestSuite) {
+            // Dependencies for integration tests
+            dependencies {
+                // Include the main project code as a dependency
+                // (test suite automatically has access to test sources)
+                implementation project()
+                // Bill of Materials
+                // Tem as versoes das dependencias!
+                implementation platform('org.testcontainers:testcontainers-bom:2.0.2')
+                implementation 'org.testcontainers:junit-jupiter'
+                implementation 'org.testcontainers:postgresql'
+                implementation 'org.springframework.boot:spring-boot-testcontainers'
+            }
+
+            // Configuration for the test task that runs these tests
+            targets {
                 configureEach {  // Applies to all targets (currently just one task)
                     testTask.configure {
                         // Ordering rule: integrationTest runs after regular test task
