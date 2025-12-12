@@ -11,6 +11,7 @@ import com.example.model.enums.OrderStatus;
 import com.example.repository.OrderRepository;
 import com.example.repository.ProductRepository;
 import com.example.service.InventoryService;
+import com.example.service.KafkaProducerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ class MockitoExampleTest {
 
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private KafkaProducerService kafkaProducerService;
 
 
     @Nested

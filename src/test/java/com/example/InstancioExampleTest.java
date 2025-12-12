@@ -8,6 +8,7 @@ import com.example.model.enums.ProductCategory;
 import lombok.extern.slf4j.Slf4j;
 import org.instancio.Instancio;
 import org.instancio.Select;
+import org.instancio.TargetSelector;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,7 +30,9 @@ class InstancioExampleTest {
     @Test
     @DisplayName("should generate a complete Product object")
     void testGenerateSimpleProduct() {
-        Product product = Instancio.create(Product.class);
+        Product product = Instancio.of(Product.class)
+                                   .set(Select.field(Product::isActive), true)
+                                   .create();
 
         System.out.println(product);
 
@@ -185,9 +188,9 @@ class InstancioExampleTest {
         @DisplayName("should create and override Product values using TestModelFactory")
         void shouldOverrideProductValuesUsingTestModelFactory() {
             Product overriddenProduct = Instancio.of(TestModelFactory.PRODUCT_MODEL)
-                    .set(Select.field(Product::getName), "Overridden Name")
-                    .set(Select.field(Product::getPrice), new BigDecimal("500.00"))
-                    .create();
+                                                 .set(Select.field(Product::getName), "Overridden Name")
+                                                 .set(Select.field(Product::getPrice), new BigDecimal("500.00"))
+                                                 .create();
 
             assertThat(overriddenProduct).isNotNull();
             assertThat(overriddenProduct.getName()).isEqualTo("Overridden Name");

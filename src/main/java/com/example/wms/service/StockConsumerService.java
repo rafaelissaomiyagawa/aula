@@ -13,7 +13,7 @@ public class StockConsumerService {
 
     private static final String STOCK_TOPIC = "stock-topic";
 
-    @KafkaListener(topics = STOCK_TOPIC)
+    @KafkaListener(topics = STOCK_TOPIC, groupId = "stock-group-id")
     public void consumeStockUpdate(StockUpdate message) {
         log.info("Internal WMS Module: Received stock update for product {}: new quantity is {}",
                  message.productId(),

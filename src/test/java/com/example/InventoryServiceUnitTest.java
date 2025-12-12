@@ -7,6 +7,7 @@ import com.example.model.entity.Product;
 import com.example.repository.OrderRepository;
 import com.example.repository.ProductRepository;
 import com.example.service.InventoryService;
+import com.example.service.KafkaProducerService;
 import org.assertj.core.api.Assertions;
 import org.instancio.Instancio;
 import org.instancio.Select;
@@ -41,11 +42,12 @@ public class InventoryServiceUnitTest {
 
         ProductRepository productRepository = Mockito.mock(ProductRepository.class);
         OrderRepository orderRepository = Mockito.mock(OrderRepository.class);
+        KafkaProducerService kafkaProducerService = Mockito.mock(KafkaProducerService.class);
 
         Mockito.when(productRepository.findById(orderItemRequest.productId()))
                .thenReturn(Optional.of(product));
 
-        InventoryService inventoryService = new InventoryService(productRepository, orderRepository);
+        InventoryService inventoryService = new InventoryService(productRepository, orderRepository, kafkaProducerService);
 
         Assertions.assertThatExceptionOfType(BusinessRuleException.class)
                   .isThrownBy(() -> inventoryService.placeOrder(orderRequest))

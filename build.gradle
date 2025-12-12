@@ -33,7 +33,7 @@ dependencies {
 
     // Flyway
     implementation 'org.flywaydb:flyway-core:10.11.0'
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.11.0'
+    implementation 'org.flywaydb:flyway-database-postgresql:10.11.0'
 
     // Legal! executa quando subimos o spring boot com ./gradlew bootRun
     // Mas não faz a mesma coisa no ambiente de teste de integração!
@@ -102,12 +102,14 @@ testing {
                 implementation 'org.testcontainers:junit-jupiter'
                 implementation 'org.testcontainers:postgresql'
                 implementation 'org.springframework.boot:spring-boot-testcontainers'
+                implementation 'org.springframework.kafka:spring-kafka-test'
             }
 
             // Configuration for the test task that runs these tests
             targets {
                 configureEach {  // Applies to all targets (currently just one task)
                     testTask.configure {
+                        systemProperty 'spring.profiles.active', 'integration'
                         // Ordering rule: integrationTest runs after regular test task
                         shouldRunAfter(test)
                     }
