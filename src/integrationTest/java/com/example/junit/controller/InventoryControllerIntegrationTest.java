@@ -58,7 +58,7 @@ public class InventoryControllerIntegrationTest extends BaseIntegrationTest {
                         .content(objectMapper.writeValueAsString(orderRequest)))
                 // then
                 .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.orderId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.orderNumber").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.customerEmail").value(orderRequest.customerEmail()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.items.length()").value(2));
     }

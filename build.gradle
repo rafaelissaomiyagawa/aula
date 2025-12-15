@@ -63,7 +63,7 @@ if (!project.hasProperty("ci-environment")) {
 
 // https://github.com/radarsh/gradle-test-logger-plugin
 testlogger {
-    showPassed = false
+    showPassed = true
     showFailed = true
     showSkipped = false
 }
@@ -112,10 +112,15 @@ testing {
                         systemProperty 'spring.profiles.active', 'integration'
                         // Ordering rule: integrationTest runs after regular test task
                         shouldRunAfter(test)
+                        filter {
+                            excludeTestsMatching '*CanaryTest*'
+                        }
                     }
                 }
             }
         }
+
+
     }
 }
 
@@ -123,8 +128,33 @@ configurations {
     integrationTestImplementation.extendsFrom testImplementation
 }
 
+// Register a task for canary test
+tasks.register('canaryTest', Test) {
+    description = 'Runs canary test to validate environment'
+    group = 'verification'
+
+    // Use integration test source set
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    systemProperty 'spring.profiles.active', 'integration'
+
+    // Only run CanaryTest - use JUnit pattern
+    useJUnitPlatform {
+        includeEngines 'junit-jupiter'
+    }
+
+    // Include only CanaryTest
+    filter {
+        includeTestsMatching '*CanaryTest'
+    }
+}
+
 // Hook integration tests into the standard check lifecycle
 tasks.named('check') {
     // Makes running 'check' also run integration tests
     dependsOn(testing.suites.integrationTest)
+}
+
+tasks.named('integrationTest') {
+    dependsOn canaryTest
 }
