@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- ======================== -->
+    <!-- PROPERTIES & VARIABLES  -->
+    <!-- ======================== -->
+
+    <!-- Application name from Spring -->
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
+    <springProperty scope="context" name="PROFILE" source="spring.profiles.active"/>
+
+    <!-- Environment-based log directory -->
+    <property name="LOG_DIR" value="${LOG_PATH:-./logs}"/>
+    <property name="LOG_FILE" value="${LOG_DIR}/${APP_NAME:-application}.log"/>
+
+    <!-- Color patterns (only for console) -->
+    <property name="CONSOLE_PATTERN"
+              value="%d{HH:mm:ss.SSS} %clr(%5p) %clr([%15.15t]){cyan} %clr(%-40.40logger{39}){blue} %m%n"/>
+
+    <!-- File pattern (no colors) -->
+    <property name="FILE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%t] %c{1} - %m%n"/>
+
+    <!-- JSON pattern for structured logging (optional) -->
+    <property name="JSON_PATTERN"
+              value='{"time":"%d{yyyy-MM-dd HH:mm:ss.SSS}", "level":"%p", "thread":"%t", "logger":"%c", "message":"%m", "exception":"%ex"}%n'/>
+
+    <!-- ======================== -->
+    <!-- APPENDERS CONFIGURATION -->
+    <!-- ======================== -->
+
+    <!-- CONSOLE APPENDER (Primary for Development) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Use ANSI colors only in dev profile -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>
+                    %d{HH:mm:ss.SSS} %highlight(%-5level) %cyan([%15.15t]) %yellow(%-30logger{30})
+                    : %message
+                    %red(%replace(%ex){'[\r\n]+', '\\n'})
+                    %nopex%n
+                </pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <!-- FILE APPENDER with Rolling Policy -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/${APP_NAME:-application}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ERROR-ONLY FILE APPENDER -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/errors.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/errors-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ASYNC APPENDER for Production Performance -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE"/>
+        <queueSize>512</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>true</includeCallerData>
+        <neverBlock>true</neverBlock>
+    </appender>
+
+    <!-- ======================== -->
+    <!-- LOGGER CONFIGURATIONS   -->
+    <!-- ======================== -->
+
+    <!-- Root Logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+
+    <!-- Application-specific loggers -->
+    <logger name="com.yourcompany" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+    <!-- Course-specific visual logger -->
+    <logger name="course" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+    <!-- Framework noise reduction (but keep them in files) -->
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.apache.kafka" level="WARN"/>
+    <logger name="org.apache.tomcat" level="WARN"/>
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+
+    <!-- SQL Query logging (optional, for debugging) -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+
+</configuration>

@@ -11,5 +11,10 @@
     - Added Spotless (Google Java Format) and Versions plugins.
     - Created Exercise 01 in `docs/exercises/01-gradle-automation.md`.
     - Consolidated `kafka.yml` into `compose.yml` for unified development environment via Spring Boot Docker Compose.
+- **Topic 2: Spring Boot Fundamentals (DI, IoC, Configuration)**
+    - Implemented `NotificationService` (Email/SMS) using `@ConditionalOnProperty`.
+    - Created `NotificationProperties` for type-safe config.
+    - Created Exercise 02 in `docs/exercises/02-spring-fundamentals.md`.
+
 
 
