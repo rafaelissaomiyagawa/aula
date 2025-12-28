@@ -166,3 +166,59 @@ spotless {
         googleJavaFormat()
     }
 }
+
+// Task to build with staging profile
+tasks.register('buildWithStagingProfile', Exec) {
+    group = 'build'
+    description = '🏗️  Build project with staging profile'
+
+    commandLine './gradlew', 'spotlessApply', 'build', '-Dspring.profiles.active=staging'
+
+    // Set environment
+    environment 'SPRING_PROFILES_ACTIVE', 'staging'
+
+    doFirst {
+        logger.lifecycle('🚀 Starting staging build...')
+    }
+
+    doLast {
+        logger.lifecycle('✅ Gradle build with staging profile completed!')
+    }
+}
+
+
+tasks.register('buildStagingDocker', Exec) {
+    group = 'build'
+    description = '🐳 Build Docker images for staging'
+
+    commandLine 'docker', 'compose', '-f', 'compose.staging.yml', 'build'
+    doFirst {
+        logger.lifecycle('🐳 Building Docker images...')
+    }
+
+    doLast {
+        logger.lifecycle('✅ Docker images built successfully!')
+    }
+}
+
+
+tasks.register('buildStaging') {
+    group = 'build'
+    description = '🎯 Complete staging build (Gradle + Docker)'
+
+    dependsOn buildWithStagingProfile
+    finalizedBy buildStagingDocker
+
+    doFirst {
+        logger.lifecycle('🎯 Starting complete staging build process...')
+    }
+
+    doLast {
+        logger.lifecycle('🎉 Staging build completed successfully! Ready for deployment!')
+    }
+}
+
+// Add task ordering
+buildStagingDocker.configure {
+    mustRunAfter buildWithStagingProfile
+}

@@ -8,9 +8,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "application.notification")
 public record NotificationProperties(
-    @NotNull NotificationType type,
-    @NotBlank String sender,
-    boolean enabled) {
+    @NotNull NotificationType type, @NotBlank String sender, boolean enabled) {
 
   public enum NotificationType {
     EMAIL,

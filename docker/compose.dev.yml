@@ -1,17 +1,23 @@
+
 services:
   db:
-    image: postgres:17.5
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
     container_name: 'curso-spring-boot-db'
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-aula}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aula}
+      POSTGRES_DB: ${POSTGRES_DB:-aula}
       TZ: 'America/Sao_Paulo'
       PGTZ: 'America/Sao_Paulo'
     ports:
       - "0.0.0.0:5432:5432"
+    labels:
+      org.springframework.boot.service-connection: postgres
     volumes:
       - curso-spring-boot-db-data:/var/lib/postgresql/data
+      - psql-history:/var/lib/postgresql
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -35,7 +41,9 @@ services:
       retries: 5
 
   kafka:
-    image: confluentinc/cp-kafka:7.6.0
+    build:
+      context: .
+      dockerfile: kafka.Dockerfile
     hostname: kafka
     container_name: kafka
     ports:
@@ -43,7 +51,6 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      # Simple single listener configuration
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -61,3 +68,4 @@ services:
 
 volumes:
   curso-spring-boot-db-data:
+  psql-history:

@@ -1,0 +1,14 @@
+.git
+../.gradle
+.idea
+build
+bin
+out
+docker/.env
+Dockerfile
+.dockerignore
+compose.dev.yml
+README.md
+gradlew
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar

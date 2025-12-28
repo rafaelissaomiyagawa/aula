@@ -17,6 +17,15 @@
     - Created Exercise 02 in `docs/exercises/02-spring-fundamentals.md`.
     - Implemented `OrderPlacedEvent` and `OrderNotificationListener` to decouple notification logic.
     - Created Exercise 03 in `docs/exercises/03-spring-events.md` (Replaces Price Calculator exercise).
+- **Topic 3: Docker Integration**
+    - Created optimized Multi-stage `Dockerfile` with layered jar support.
+    - Implemented `.dockerignore` and resource limits in `compose.yml`.
+    - Configured `depends_on` with healthcheck conditions in Docker Compose.
+    - **Refactoring:** Moved all Docker files to `docker/` directory.
+    - **Refactoring:** Configured `spring.docker.compose.file` to point to `./docker/compose.yml`.
+    - Created Exercise 04 in `docs/exercises/04-docker-integration.md`.
+
+
 
 
 
