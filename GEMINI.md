@@ -15,6 +15,9 @@
     - Implemented `NotificationService` (Email/SMS) using `@ConditionalOnProperty`.
     - Created `NotificationProperties` for type-safe config.
     - Created Exercise 02 in `docs/exercises/02-spring-fundamentals.md`.
+    - Implemented `OrderPlacedEvent` and `OrderNotificationListener` to decouple notification logic.
+    - Created Exercise 03 in `docs/exercises/03-spring-events.md` (Replaces Price Calculator exercise).
+
 
 
 

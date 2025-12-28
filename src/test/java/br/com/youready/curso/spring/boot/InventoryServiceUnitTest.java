@@ -4,11 +4,10 @@ import br.com.youready.curso.spring.boot.exception.BusinessRuleException;
 import br.com.youready.curso.spring.boot.model.dto.OrderItemRequest;
 import br.com.youready.curso.spring.boot.model.dto.OrderRequest;
 import br.com.youready.curso.spring.boot.model.entity.Product;
-import br.com.youready.curso.spring.boot.notification.NotificationService;
+import br.com.youready.curso.spring.boot.publisher.InventoryEventPublisher;
 import br.com.youready.curso.spring.boot.repository.OrderRepository;
 import br.com.youready.curso.spring.boot.repository.ProductRepository;
 import br.com.youready.curso.spring.boot.service.InventoryService;
-import br.com.youready.curso.spring.boot.service.KafkaProducerService;
 import java.util.List;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -43,15 +42,13 @@ public class InventoryServiceUnitTest {
 
     ProductRepository productRepository = Mockito.mock(ProductRepository.class);
     OrderRepository orderRepository = Mockito.mock(OrderRepository.class);
-    KafkaProducerService kafkaProducerService = Mockito.mock(KafkaProducerService.class);
-    NotificationService notificationService = Mockito.mock(NotificationService.class);
+    InventoryEventPublisher eventPublisher = Mockito.mock(InventoryEventPublisher.class);
 
     Mockito.when(productRepository.findById(orderItemRequest.productId()))
         .thenReturn(Optional.of(product));
 
     InventoryService inventoryService =
-        new InventoryService(
-            productRepository, orderRepository, kafkaProducerService, notificationService);
+        new InventoryService(productRepository, orderRepository, eventPublisher);
 
     Assertions.assertThatExceptionOfType(BusinessRuleException.class)
         .isThrownBy(() -> inventoryService.placeOrder(orderRequest))

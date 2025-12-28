@@ -10,7 +10,7 @@ import br.com.youready.curso.spring.boot.model.entity.OrderItem;
 import br.com.youready.curso.spring.boot.model.entity.Product;
 import br.com.youready.curso.spring.boot.model.enums.OrderStatus;
 import br.com.youready.curso.spring.boot.model.enums.ProductCategory;
-import br.com.youready.curso.spring.boot.notification.NotificationService;
+import br.com.youready.curso.spring.boot.publisher.InventoryEventPublisher;
 import br.com.youready.curso.spring.boot.repository.OrderRepository;
 import br.com.youready.curso.spring.boot.repository.ProductRepository;
 import java.math.BigDecimal;
@@ -33,8 +33,7 @@ public class InventoryService {
 
   private final ProductRepository productRepository;
   private final OrderRepository orderRepository;
-  private final KafkaProducerService kafkaProducerService;
-  private final NotificationService notificationService;
+  private final InventoryEventPublisher eventPublisher;
 
   public OrderResponse placeOrder(OrderRequest request) {
     Order order = new Order();
@@ -79,7 +78,7 @@ public class InventoryService {
       int newStock = product.getStockQuantity() - quantity;
       product.setStockQuantity(newStock);
       productRepository.save(product);
-      kafkaProducerService.sendStockUpdate(new StockUpdate(product.getId(), newStock));
+      eventPublisher.publishStockUpdated(new StockUpdate(product.getId(), newStock));
     }
 
     // Free shipping
@@ -97,9 +96,7 @@ public class InventoryService {
     order.setTotalAmount(totalAmount);
     Order savedOrder = orderRepository.save(order);
     log.info("Order {} placed successfully.", savedOrder.getOrderNumber());
-    notificationService.send(
-        savedOrder.getCustomerEmail(),
-        "Order " + savedOrder.getOrderNumber() + " placed successfully.");
+    eventPublisher.publishOrderPlaced(savedOrder);
 
     return toOrderResponse(savedOrder);
   }
@@ -122,7 +119,7 @@ public class InventoryService {
       int newStock = product.getStockQuantity() + item.getQuantity();
       product.setStockQuantity(newStock);
       productRepository.save(product);
-      kafkaProducerService.sendStockUpdate(new StockUpdate(product.getId(), newStock));
+      eventPublisher.publishStockUpdated(new StockUpdate(product.getId(), newStock));
     }
     orderRepository.save(order);
     log.info("Order {} has been cancelled.", order.getOrderNumber());
@@ -161,7 +158,7 @@ public class InventoryService {
     int newStock = product.getStockQuantity() + itemToRefund.getQuantity();
     product.setStockQuantity(newStock);
     productRepository.save(product);
-    kafkaProducerService.sendStockUpdate(new StockUpdate(product.getId(), newStock));
+    eventPublisher.publishStockUpdated(new StockUpdate(product.getId(), newStock));
 
     log.info(
         "Refund for item {} on order {} processed. Amount: {}",
@@ -184,7 +181,7 @@ public class InventoryService {
     }
     product.setStockQuantity(newStock);
     productRepository.save(product);
-    kafkaProducerService.sendStockUpdate(new StockUpdate(product.getId(), newStock));
+    eventPublisher.publishStockUpdated(new StockUpdate(product.getId(), newStock));
     log.info("Stock for product {} updated to {}.", product.getName(), newStock);
   }
 
