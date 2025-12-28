@@ -1,0 +1,24 @@
+[versions]
+springBoot = "3.5.8"
+springDependencyManagement = "1.1.7"
+lombok = "9.1.0"
+testLogger = "4.0.0"
+flyway = "11.20.0"
+instancio = "5.5.1"
+testcontainers = "2.0.3"
+spotless = "8.1.0"
+versions = "0.53.0"
+
+[libraries]
+flyway-core = { group = "org.flywaydb", name = "flyway-core", version.ref = "flyway" }
+flyway-database-postgresql = { group = "org.flywaydb", name = "flyway-database-postgresql", version.ref = "flyway" }
+instancio-junit = { group = "org.instancio", name = "instancio-junit", version.ref = "instancio" }
+testcontainers-bom = { group = "org.testcontainers", name = "testcontainers-bom", version.ref = "testcontainers" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
+test-logger = { id = "com.adarshr.test-logger", version.ref = "testLogger" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

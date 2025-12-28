@@ -1,10 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.8'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'io.freefair.lombok' version '8.6'
-    id 'com.adarshr.test-logger' version '4.0.0'
     id 'java-test-fixtures'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.lombok)
+    alias(libs.plugins.test.logger)
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.versions)
 }
 
 group = 'com.example'
@@ -32,8 +34,8 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // Flyway
-    implementation 'org.flywaydb:flyway-core:10.11.0'
-    implementation 'org.flywaydb:flyway-database-postgresql:10.11.0'
+    implementation libs.flyway.core
+    implementation libs.flyway.database.postgresql
 
     // Legal! executa quando subimos o spring boot com ./gradlew bootRun
     // Mas não faz a mesma coisa no ambiente de teste de integração!
@@ -43,7 +45,7 @@ dependencies {
     // Spring Boot testing support
     testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
     // Random test data generator for JUnit
-    testFixturesImplementation 'org.instancio:instancio-junit:5.5.1'
+    testFixturesImplementation libs.instancio.junit
 }
 
 tasks.named("test", Test) {
@@ -80,7 +82,7 @@ testing {
                 implementation 'org.springframework.boot:spring-boot-starter-test'
 
                 // Random test data generator for JUnit
-                implementation 'org.instancio:instancio-junit:5.5.1'
+                implementation libs.instancio.junit
             }
         }
 
@@ -98,7 +100,7 @@ testing {
                 implementation project()
                 // Bill of Materials
                 // Tem as versoes das dependencias!
-                implementation platform('org.testcontainers:testcontainers-bom:2.0.2')
+                implementation platform(libs.testcontainers.bom)
                 implementation 'org.testcontainers:junit-jupiter'
                 implementation 'org.testcontainers:postgresql'
                 implementation 'org.springframework.boot:spring-boot-testcontainers'
@@ -157,4 +159,10 @@ tasks.named('check') {
 
 tasks.named('integrationTest') {
     dependsOn canaryTest
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
 }
