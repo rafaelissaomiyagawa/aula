@@ -15,8 +15,8 @@ import br.com.youready.curso.spring.boot.model.entity.Product;
 import br.com.youready.curso.spring.boot.model.enums.OrderStatus;
 import br.com.youready.curso.spring.boot.repository.OrderRepository;
 import br.com.youready.curso.spring.boot.repository.ProductRepository;
+import br.com.youready.curso.spring.boot.publisher.InventoryEventPublisher;
 import br.com.youready.curso.spring.boot.service.InventoryService;
-import br.com.youready.curso.spring.boot.service.KafkaProducerService;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ class MockitoExampleTest {
 
   @Mock private OrderRepository orderRepository;
 
-  @Mock private KafkaProducerService kafkaProducerService;
+  @Mock private InventoryEventPublisher eventPublisher;
 
   @Nested
   @DisplayName("Standard Mockito Style")
