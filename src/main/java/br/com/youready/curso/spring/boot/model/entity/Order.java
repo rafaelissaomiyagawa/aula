@@ -1,5 +1,6 @@
 package br.com.youready.curso.spring.boot.model.entity;
 
+import br.com.youready.curso.spring.boot.model.dto.OrderResponse;
 import br.com.youready.curso.spring.boot.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -84,5 +86,18 @@ public class Order {
     return this instanceof HibernateProxy
         ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
         : getClass().hashCode();
+  }
+
+  public OrderResponse toOrderResponse() {
+    return new OrderResponse(
+        this.getId(),
+        this.getOrderNumber(),
+        this.getCustomerEmail(),
+        this.getOrderDate(),
+        this.getStatus(),
+        this.getTotalAmount(),
+        this.isFreeShipping(),
+        this.isManualReview(),
+        this.getItems().stream().map(OrderItem::toOrderItemResponse).collect(Collectors.toList()));
   }
 }

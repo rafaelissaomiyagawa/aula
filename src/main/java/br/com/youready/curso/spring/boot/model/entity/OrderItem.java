@@ -1,5 +1,6 @@
 package br.com.youready.curso.spring.boot.model.entity;
 
+import br.com.youready.curso.spring.boot.model.dto.OrderResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -62,5 +63,13 @@ public class OrderItem {
     return this instanceof HibernateProxy
         ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
         : getClass().hashCode();
+  }
+
+  OrderResponse.OrderItemResponse toOrderItemResponse() {
+    return new OrderResponse.OrderItemResponse(
+        this.getProduct().getId(),
+        this.getProduct().getName(),
+        this.getQuantity(),
+        this.getUnitPrice());
   }
 }

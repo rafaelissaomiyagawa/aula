@@ -1,10 +1,14 @@
 package br.com.youready.curso.spring.boot.model.entity;
 
 import br.com.youready.curso.spring.boot.exception.BusinessRuleException;
+import br.com.youready.curso.spring.boot.model.dto.ProductResponse;
 import br.com.youready.curso.spring.boot.model.enums.ProductCategory;
 import br.com.youready.curso.spring.boot.validation.Sku;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
 import lombok.*;
@@ -77,5 +81,16 @@ public class Product {
     if (this.getStockQuantity() < quantity) {
       throw new BusinessRuleException("Not enough stock for product: " + this.getName());
     }
+  }
+
+  public ProductResponse toProductResponse() {
+    return new ProductResponse(
+        this.getId(),
+        this.getSku(),
+        this.getName(),
+        this.getPrice(),
+        this.getCategory(),
+        this.getStockQuantity(),
+        this.isActive());
   }
 }

@@ -98,7 +98,7 @@ public class InventoryService {
     log.info("Order {} placed successfully.", savedOrder.getOrderNumber());
     eventPublisher.publishOrderPlaced(savedOrder);
 
-    return toOrderResponse(savedOrder);
+    return savedOrder.toOrderResponse();
   }
 
   public void cancelOrder(Long orderId) {
@@ -187,39 +187,7 @@ public class InventoryService {
 
   public List<ProductResponse> getLowStockProducts() {
     return productRepository.findLowStockProducts().stream()
-        .map(this::toProductResponse)
+        .map(Product::toProductResponse)
         .collect(Collectors.toList());
-  }
-
-  private OrderResponse toOrderResponse(Order order) {
-    return new OrderResponse(
-        order.getId(),
-        order.getOrderNumber(),
-        order.getCustomerEmail(),
-        order.getOrderDate(),
-        order.getStatus(),
-        order.getTotalAmount(),
-        order.isFreeShipping(),
-        order.isManualReview(),
-        order.getItems().stream().map(this::toOrderItemResponse).collect(Collectors.toList()));
-  }
-
-  private OrderResponse.OrderItemResponse toOrderItemResponse(OrderItem item) {
-    return new OrderResponse.OrderItemResponse(
-        item.getProduct().getId(),
-        item.getProduct().getName(),
-        item.getQuantity(),
-        item.getUnitPrice());
-  }
-
-  private ProductResponse toProductResponse(Product product) {
-    return new ProductResponse(
-        product.getId(),
-        product.getSku(),
-        product.getName(),
-        product.getPrice(),
-        product.getCategory(),
-        product.getStockQuantity(),
-        product.isActive());
   }
 }
