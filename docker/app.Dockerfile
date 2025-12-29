@@ -1,8 +1,18 @@
 # Stage 1: Build the application
 FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /app
-COPY . .
-# Build and ensure layered jar support
+
+# Optimization: Cache dependencies by copying Gradle config first
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
+COPY gradle/libs.versions.toml gradle/
+
+# Resolve dependencies (cached layer)
+RUN ./gradlew dependencies --no-daemon
+
+# Copy source and build
+COPY src src
 RUN ./gradlew bootJar --no-daemon
 
 # Stage 2: Extract layers
