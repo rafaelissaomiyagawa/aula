@@ -16,9 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class ProductQueryService {
+
   private static final Logger log = LoggerFactory.getLogger(ProductQueryService.class);
 
   private final ProductRepository productRepository;
@@ -47,6 +48,12 @@ public class ProductQueryService {
 
   public List<ProductResponse> getTopExpensiveProducts() {
     return productRepository.findTop5ByOrderByPriceDesc().stream()
+        .map(Product::toProductResponse)
+        .collect(Collectors.toList());
+  }
+
+  public List<ProductResponse> getLowStockProducts() {
+    return productRepository.findLowStockProducts().stream()
         .map(Product::toProductResponse)
         .collect(Collectors.toList());
   }

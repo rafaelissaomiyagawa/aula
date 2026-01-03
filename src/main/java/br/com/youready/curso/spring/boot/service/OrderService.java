@@ -1,9 +1,9 @@
 package br.com.youready.curso.spring.boot.service;
 
 import br.com.youready.curso.spring.boot.exception.BusinessRuleException;
+import br.com.youready.curso.spring.boot.exception.ResourceNotFoundException;
 import br.com.youready.curso.spring.boot.model.dto.OrderRequest;
 import br.com.youready.curso.spring.boot.model.dto.OrderResponse;
-import br.com.youready.curso.spring.boot.model.dto.ProductResponse;
 import br.com.youready.curso.spring.boot.model.dto.StockUpdate;
 import br.com.youready.curso.spring.boot.model.entity.Order;
 import br.com.youready.curso.spring.boot.model.entity.OrderItem;
@@ -15,9 +15,7 @@ import br.com.youready.curso.spring.boot.repository.OrderRepository;
 import br.com.youready.curso.spring.boot.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +25,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 @Transactional
-public class InventoryService {
+public class OrderService {
 
-  private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
+  private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
   private final ProductRepository productRepository;
   private final OrderRepository orderRepository;
   private final InventoryEventPublisher eventPublisher;
+
+  public OrderResponse findByOrderNumber(String orderNumber) {
+    return orderRepository
+        .findByOrderNumber(orderNumber)
+        .map(Order::toOrderResponse)
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Order not found with number: " + orderNumber));
+  }
 
   public OrderResponse placeOrder(OrderRequest request) {
     Order order = new Order();
@@ -166,28 +172,5 @@ public class InventoryService {
         order.getOrderNumber(),
         refundAmount);
     return refundAmount;
-  }
-
-  public void updateStock(Long productId, Integer quantityChange) {
-    Product product =
-        productRepository
-            .findById(productId)
-            .orElseThrow(
-                () -> new BusinessRuleException("Product not found with id: " + productId));
-
-    int newStock = product.getStockQuantity() + quantityChange;
-    if (newStock < 0) {
-      throw new BusinessRuleException("Stock quantity cannot be negative.");
-    }
-    product.setStockQuantity(newStock);
-    productRepository.save(product);
-    eventPublisher.publishStockUpdated(new StockUpdate(product.getId(), newStock));
-    log.info("Stock for product {} updated to {}.", product.getName(), newStock);
-  }
-
-  public List<ProductResponse> getLowStockProducts() {
-    return productRepository.findLowStockProducts().stream()
-        .map(Product::toProductResponse)
-        .collect(Collectors.toList());
   }
 }
