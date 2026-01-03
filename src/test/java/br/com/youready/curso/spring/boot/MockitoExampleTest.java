@@ -1,10 +1,5 @@
 package br.com.youready.curso.spring.boot;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import br.com.youready.curso.spring.boot.exception.BusinessRuleException;
 import br.com.youready.curso.spring.boot.model.dto.OrderItemRequest;
 import br.com.youready.curso.spring.boot.model.dto.OrderRequest;
@@ -16,11 +11,7 @@ import br.com.youready.curso.spring.boot.model.enums.OrderStatus;
 import br.com.youready.curso.spring.boot.publisher.InventoryEventPublisher;
 import br.com.youready.curso.spring.boot.repository.OrderRepository;
 import br.com.youready.curso.spring.boot.repository.ProductRepository;
-import br.com.youready.curso.spring.boot.service.InventoryService;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import br.com.youready.curso.spring.boot.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,11 +22,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 @DisplayName("A Guide to Mockito and BDDMockito")
 @ExtendWith(MockitoExtension.class)
 class MockitoExampleTest {
 
-  @InjectMocks private InventoryService inventoryService;
+  @InjectMocks private OrderService orderService;
 
   @Mock private ProductRepository productRepository;
 
@@ -62,7 +63,7 @@ class MockitoExampleTest {
       when(orderRepository.save(any(Order.class)))
           .thenAnswer(invocation -> invocation.getArgument(0));
 
-      OrderResponse response = inventoryService.placeOrder(orderRequest);
+      OrderResponse response = orderService.placeOrder(orderRequest);
 
       verify(productRepository, times(1)).findById(1L);
       verify(orderRepository, times(1)).save(any(Order.class));
@@ -87,7 +88,7 @@ class MockitoExampleTest {
       when(orderRepository.save(any(Order.class)))
           .thenAnswer(invocation -> invocation.getArgument(0));
 
-      inventoryService.placeOrder(orderRequest);
+      orderService.placeOrder(orderRequest);
 
       ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
       verify(orderRepository).save(orderCaptor.capture());
@@ -112,7 +113,7 @@ class MockitoExampleTest {
           new OrderRequest(
               "test@example.com", Collections.singletonList(new OrderItemRequest(1L, 1)));
 
-      assertThatThrownBy(() -> inventoryService.placeOrder(orderRequest))
+      assertThatThrownBy(() -> orderService.placeOrder(orderRequest))
           .isInstanceOf(BusinessRuleException.class)
           .hasMessage("Product not found with id: 1");
 
@@ -140,7 +141,7 @@ class MockitoExampleTest {
 
       BDDMockito.given(orderRepository.findById(1L)).willReturn(Optional.of(order));
 
-      inventoryService.cancelOrder(1L);
+      orderService.cancelOrder(1L);
 
       BDDMockito.then(orderRepository).should(times(1)).findById(1L);
       BDDMockito.then(orderRepository).should().save(any(Order.class));
