@@ -38,7 +38,8 @@ public class OrderService {
         .findByOrderNumber(orderNumber)
         .map(Order::toOrderResponse)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Order not found with number: " + orderNumber));
+            () ->
+                new ResourceNotFoundException("Order not " + "found with number: " + orderNumber));
   }
 
   public OrderResponse placeOrder(OrderRequest request) {
@@ -57,12 +58,13 @@ public class OrderService {
               .orElseThrow(
                   () ->
                       new BusinessRuleException(
-                          "Product not found with id: " + itemRequest.productId()));
+                          "Product not found " + "with id: " + itemRequest.productId()));
 
       product.validateStockQuantity(itemRequest.quantity());
 
       if (product.getCategory() == ProductCategory.ELECTRONICS && itemRequest.quantity() > 3) {
-        throw new BusinessRuleException("Cannot order more than 3 electronics of the same type.");
+        throw new BusinessRuleException(
+            "Cannot order more than " + "3 electronics of the same type.");
       }
 
       int quantity = itemRequest.quantity();
@@ -70,7 +72,8 @@ public class OrderService {
 
       // Bulk discount
       if (product.getCategory() != ProductCategory.ELECTRONICS && quantity >= 5) {
-        unitPrice = unitPrice.multiply(new BigDecimal("0.90")); // 10% discount
+        unitPrice = unitPrice.multiply(new BigDecimal("0.90"));
+        // 10% discount
       }
 
       OrderItem orderItem = new OrderItem();
@@ -115,7 +118,7 @@ public class OrderService {
 
     if (order.getStatus() == OrderStatus.SHIPPED || order.getStatus() == OrderStatus.DELIVERED) {
       throw new BusinessRuleException(
-          "Cannot cancel an order that has already been shipped or delivered.");
+          "Cannot cancel an order that has already been " + "shipped or delivered.");
     }
 
     order.setStatus(OrderStatus.CANCELLED);
@@ -142,7 +145,7 @@ public class OrderService {
             .filter(item -> item.getId().equals(itemId))
             .findFirst()
             .orElseThrow(
-                () -> new BusinessRuleException("Order item not found with id: " + itemId));
+                () -> new BusinessRuleException("Order item" + " not found with id: " + itemId));
 
     Product product = itemToRefund.getProduct();
     BigDecimal refundAmount =
@@ -150,14 +153,15 @@ public class OrderService {
 
     if (product.getCategory() == ProductCategory.GROCERY
         && order.getOrderDate().isBefore(LocalDateTime.now().minusDays(2))) {
-      throw new BusinessRuleException("Grocery items cannot be returned after 2 days.");
+      throw new BusinessRuleException("Grocery items cannot be " + "returned after 2 days.");
     }
 
     if (product.getCategory() == ProductCategory.ELECTRONICS) {
       BigDecimal restockingFee = refundAmount.multiply(new BigDecimal("0.20"));
       refundAmount = refundAmount.subtract(restockingFee);
       log.info(
-          "Applied 20% restocking fee for electronics refund on order {}.", order.getOrderNumber());
+          "Applied 20% restocking fee for electronics refund " + "on order {}.",
+          order.getOrderNumber());
     }
 
     // Return item to stock

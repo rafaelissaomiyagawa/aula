@@ -139,6 +139,8 @@ tasks.register('canaryTest', Test) {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
 
+    systemProperty 'spring.profiles.active', 'integration'
+
     // Only run CanaryTest - use JUnit pattern
     useJUnitPlatform {
         includeEngines 'junit-jupiter'

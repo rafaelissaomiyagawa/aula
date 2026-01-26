@@ -1,5 +1,10 @@
 package br.com.youready.curso.spring.boot;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import br.com.youready.curso.spring.boot.exception.BusinessRuleException;
 import br.com.youready.curso.spring.boot.model.dto.OrderItemRequest;
 import br.com.youready.curso.spring.boot.model.dto.OrderRequest;
@@ -12,6 +17,10 @@ import br.com.youready.curso.spring.boot.publisher.InventoryEventPublisher;
 import br.com.youready.curso.spring.boot.repository.OrderRepository;
 import br.com.youready.curso.spring.boot.repository.ProductRepository;
 import br.com.youready.curso.spring.boot.service.OrderService;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,16 +30,6 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @DisplayName("A Guide to Mockito and BDDMockito")
 @ExtendWith(MockitoExtension.class)
