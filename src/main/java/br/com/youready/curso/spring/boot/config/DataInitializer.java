@@ -32,7 +32,7 @@ public class DataInitializer {
               "Coffee Beans",
               new BigDecimal("25.50"),
               ProductCategory.GROCERY,
-              10,
+              100,
               true));
       productRepository.save(
           new Product(

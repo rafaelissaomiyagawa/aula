@@ -66,7 +66,8 @@
 Implementar regra de frete para VIPs.
 
 **🎯 Motivação**
-Fidelização de clientes Premium.
+Fidelização de clientes Premium. 
+O frontend vai enviar uma flag 'isVip' para clientes VIP.
 
 **🏁 Critérios de Aceite**
 *   **Standard:** Frete grátis > R$ 100,00
@@ -88,3 +89,5 @@ Vamos implementar de **duas formas**:
 2.  A forma **sugerida** (Profissional).
 
 </div>
+
+---
